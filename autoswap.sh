@@ -20,11 +20,11 @@ DECREASE_THRESHOLD_G=8
     AVAILABLE_MEM="$(($(free -g | grep Mem: | awk '{print $7}') + $(free -g | grep Swap: | awk '{print $4}')))"
     if [ "$AVAILABLE_MEM" -lt "$INCREASE_THRESHOLD_G" ]
     then
-      echo "[$(date -Is)] Increasing swap" >> ./swap.log
+      echo "[$(date -Is)] available: $AVAILABLE_MEM GB < $INCREASE_THRESHOLD_G GB => Increasing swap" >> ./swap.log
       ./increase-swap.sh >> ./swap.log 2>&1
-    elif [ "$AVAILABLE_MEM" -gt "$DECREASE_THRESHOLD_G" ]
+    elif [ "$AVAILABLE_MEM" -gt "$DECREASE_THRESHOLD_G" ] && [ ! -z "$(swapon --show)" ]
     then
-      echo "[$(date -Is)] Decreasing swap" >> ./swap.log
+      echo "[$(date -Is)] available: $AVAILABLE_MEM GB > $DECREASE_THRESHOLD_G GB => Decreasing swap" >> ./swap.log
       ./decrease-swap.sh >> ./swap.log 2>&1
     fi
     sleep 1
